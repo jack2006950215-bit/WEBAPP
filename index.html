@@ -11,10 +11,14 @@
     .modal-backdrop{display:none;position:fixed;inset:0;background:#292c2680;z-index:5;align-items:flex-end;justify-content:center}.modal-backdrop.open{display:flex}.modal{background:var(--paper);width:min(480px,100%);border-radius:24px 24px 0 0;padding:20px 22px 30px;max-height:88vh;overflow:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.modal-head h3{font-size:18px;margin:0}.close{background:#f3f1eb;border:0;border-radius:50%;width:31px;height:31px;font-size:17px;color:#777}.field{margin:13px 0}.field label{display:block;color:#75796f;font-size:11px;font-weight:700;margin-bottom:7px}.field input,.field select{width:100%;height:43px;border:1px solid #e9e7df;border-radius:12px;background:#fffefa;padding:0 12px;color:var(--ink);outline:none}.field input:focus,.field select:focus{border-color:#a8b9a2}.row{display:grid;grid-template-columns:1fr 1fr;gap:11px}.seg{display:flex;gap:7px}.seg button{flex:1;border:1px solid #e9e7df;background:white;color:#777;border-radius:11px;padding:9px 4px;font-size:11px}.seg button.selected{background:#edf1e9;border-color:#b8c5b2;color:#53664f;font-weight:700}.color-row{display:flex;gap:10px}.swatch{width:29px;height:29px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 1px #e6e4dd}.swatch.selected{box-shadow:0 0 0 2px var(--sage-dark)}.form-submit{width:100%;border:0;border-radius:13px;background:var(--sage-dark);color:white;padding:13px;font-weight:700;margin-top:9px}.empty{text-align:center;color:var(--muted);padding:25px 8px;font-size:12px}
     @media(min-width:600px){body{padding:20px 0}.app{border-radius:26px;min-height:calc(100vh - 40px);box-shadow:0 20px 60px #42443712}.nav{bottom:20px;border-radius:0 0 26px 26px}.fab{bottom:106px}}
   </style>
+  <style>
+    .auth-controls{display:flex;align-items:center;gap:8px;min-width:0}.google-login{height:38px;padding:0 11px;border:1px solid var(--line);border-radius:13px;background:var(--paper);color:var(--ink);display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;white-space:nowrap}.google-login:disabled{opacity:.65;cursor:not-allowed}.google-mark{width:19px;height:19px;border-radius:50%;background:white;display:grid;place-items:center;color:#4285f4;font-size:13px;font-weight:800;box-shadow:0 0 0 1px #eee}.signed-in-profile{display:flex;align-items:center;gap:7px;min-width:0}.auth-photo{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#e8ddd0}.auth-name{max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:700}.signout-btn{border:0;background:transparent;color:var(--sage-dark);font-size:11px;font-weight:700;padding:7px 0 7px 5px}.auth-status{margin:-11px 0 13px;color:#9b725d;font-size:11px;line-height:1.45}.auth-status[hidden],[hidden]{display:none!important}
+  </style>
 </head>
 <body>
 <div class="app">
-  <header class="top"><div class="brand"><span>☁</span>日常・好好安排</div><div class="avatar" aria-label="個人檔案">🌿</div></header>
+  <header class="top"><div class="brand"><span>☁</span>日常・好好安排</div><div class="auth-controls"><button class="google-login" id="googleSignIn" type="button"><span class="google-mark" aria-hidden="true">G</span><span>Google 登入</span></button><div class="signed-in-profile" id="signedInProfile" hidden><img class="auth-photo" id="authPhoto" alt="" hidden /><span class="auth-name" id="authName"></span><button class="signout-btn" id="googleSignOut" type="button">登出</button></div></div></header>
+  <p class="auth-status" id="authStatus" role="status" aria-live="polite" hidden></p>
   <p class="greeting">早安，今天也慢慢來</p><h1 class="heading">把日子過得剛剛好</h1>
   <div class="datebar"><div class="date-label" id="monthTitle">10月 30日 <small>星期五</small></div><div class="date-controls"><button class="icon-btn" id="prevWeek" aria-label="上一週">‹</button><button class="icon-btn" id="todayBtn" aria-label="回到今天">⌂</button><button class="icon-btn" id="nextWeek" aria-label="下一週">›</button></div></div>
   <div class="week" id="week"></div>
@@ -61,5 +65,6 @@
  render();
 })();
 </script>
+<script type="module" src="./auth.js"></script>
 </body>
 </html>
