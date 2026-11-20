@@ -9,3 +9,7 @@ export const firebaseConfig = {
   appId: "1:115197094121:web:28f12a614404e57eaba878",
   measurementId: "G-E6ZV9Q2JSD",
 };
+
+// Set this after registering the web app with Firebase App Check.
+// It is a public reCAPTCHA Enterprise site key, not a secret.
+export const appCheckSiteKey = "";
