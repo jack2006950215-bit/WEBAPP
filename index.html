@@ -34,13 +34,13 @@
     .focus-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 22px;align-items:center;background:linear-gradient(135deg,#edf1e9,#f8f3e9);border:1px solid #e5e9df;border-radius:22px;padding:20px;margin:20px 0 26px;max-width:900px}.focus-kicker{font-size:11px;color:var(--sage-dark);font-weight:700}.focus-copy h2{margin:5px 0;font-size:18px}.focus-copy p{margin:0;color:var(--muted);font-size:12px}.timer-display{font-variant-numeric:tabular-nums;font-size:36px;letter-spacing:.03em;font-weight:750;color:var(--sage-dark)}.timer-presets{display:flex;gap:7px}.timer-preset,.timer-secondary{border:1px solid #e1e5db;background:#fffdf9;color:#687464;border-radius:11px;padding:8px 12px;font-size:11px}.timer-preset.selected{background:#6d806a;color:white;border-color:#6d806a}.timer-actions{display:flex;gap:8px;justify-content:flex-end}.timer-start{background:var(--sage-dark);color:#fff;border:0;border-radius:11px;padding:9px 18px;font-size:12px;font-weight:700}.urge-button{grid-column:1/-1;border:1px solid #edd8cd;background:#fff9f5;color:#a56f5c;border-radius:13px;padding:11px;font-weight:700;font-size:12px}.task{align-items:flex-start}.task-body{flex:1;min-width:0}.task-next{background:#f5f5ef;border-radius:10px;padding:9px 10px;margin-top:9px;color:#66745f;font-size:11px;line-height:1.5}.task-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}.task-step-btn,.task-details summary{border:0;background:none;color:var(--sage-dark);font-size:11px;font-weight:700;padding:4px 0;cursor:pointer}.task-details{margin-top:4px}.task-details ol{margin:5px 0 8px;padding-left:22px;color:#75796f;font-size:11px;line-height:1.8}.task-details li.current-step{color:var(--sage-dark);font-weight:700}.microstep-list{display:grid;gap:8px;margin:10px 0}.microstep{display:flex;align-items:flex-start;gap:8px;color:#66745f;font-size:11px;line-height:1.5}.microstep input{margin:2px 0 0;accent-color:var(--sage-dark)}.task-reset{border:0;background:none;color:#a17968;font-size:11px;font-weight:700;padding:4px 0;cursor:pointer}.urge-backdrop{display:none;position:fixed;inset:0;background:#292c2680;z-index:9;align-items:center;justify-content:center;padding:18px}.urge-backdrop.open{display:flex}.urge-modal{position:relative;width:min(460px,100%);background:var(--paper);border-radius:24px;padding:28px 24px 22px;box-shadow:0 24px 80px #292c2633;text-align:center}.urge-modal .close{position:absolute;right:15px;top:14px}.urge-emoji{font-size:28px}.urge-modal h2{font-size:20px;margin:10px 0}.urge-modal p{color:var(--muted);font-size:12px;line-height:1.7}.urge-reasons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}.urge-reasons button{border:1px solid #e9e7df;background:#fffefa;border-radius:12px;padding:10px 6px;color:#777;font-size:11px}.urge-reasons button.selected{border-color:#a8b9a2;background:#edf1e9;color:#53664f;font-weight:700}.urge-actions{display:grid;gap:8px}.urge-actions .form-submit{margin:0}.urge-actions .timer-secondary{padding:12px}.urge-note{font-size:10px!important}.task-plan-preview{background:#f5f5ef;padding:8px 12px;border-radius:12px;color:#66745f;font-size:11px;line-height:1.7}.task-plan-preview ol{margin:4px 0;padding-left:20px}.field-hint{font-size:10px;color:var(--muted);margin-top:6px}.tasks-empty{text-align:center;color:var(--muted);padding:24px 8px;font-size:12px}
     @media(max-width:540px){.focus-card{grid-template-columns:1fr auto;padding:16px;gap:10px}.timer-display{font-size:30px}.timer-presets,.timer-actions{grid-column:1/-1;justify-content:flex-start}.urge-modal{padding:25px 17px 18px}}
 
-    .auth-button{border:1px solid #e5e8df;background:var(--paper);color:var(--sage-dark);border-radius:12px;padding:9px 13px;font-size:12px;font-weight:700;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .auth-button:disabled{opacity:.65;cursor:wait}
+    .auth-controls{display:flex;align-items:center;gap:8px;min-width:0}.google-login{height:38px;padding:0 11px;border:1px solid var(--line);border-radius:13px;background:var(--paper);color:var(--ink);display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;white-space:nowrap}.google-login:disabled{opacity:.65;cursor:not-allowed}.google-mark{width:19px;height:19px;border-radius:50%;background:white;display:grid;place-items:center;color:#4285f4;font-size:13px;font-weight:800;box-shadow:0 0 0 1px #eee}.signed-in-profile{display:flex;align-items:center;gap:7px;min-width:0}.auth-photo{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#e8ddd0}.auth-name{max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:700}.signout-btn{border:0;background:transparent;color:var(--sage-dark);font-size:11px;font-weight:700;padding:7px 0 7px 5px}.auth-status{margin:-11px 0 13px;color:#9b725d;font-size:11px;line-height:1.45}.auth-status[hidden],[hidden]{display:none!important}
   </style>
 </head>
 <body>
 <div class="app">
-  <header class="top"><div class="brand"><span>☁</span>日常・好好安排</div><button class="auth-button" id="authButton" type="button">使用 Google 登入</button></header>
+  <header class="top"><div class="brand"><span>☁</span>日常・好好安排</div><div class="auth-controls"><button class="google-login" id="googleSignIn" type="button"><span class="google-mark" aria-hidden="true">G</span><span>Google 登入</span></button><div class="signed-in-profile" id="signedInProfile" hidden><img class="auth-photo" id="authPhoto" alt="" hidden /><span class="auth-name" id="authName"></span><button class="signout-btn" id="googleSignOut" type="button">登出</button></div></div></header>
+  <p class="auth-status" id="authStatus" role="status" aria-live="polite" hidden></p>
   <p class="greeting">早安，今天也慢慢來</p><h1 class="heading">把日子過得剛剛好</h1>
   <div class="datebar"><div class="date-label" id="monthTitle">10月 30日 <small>星期五</small></div><div class="date-controls"><button class="icon-btn" id="prevWeek" aria-label="上一週">‹</button><button class="icon-btn" id="todayBtn" aria-label="回到今天">⌂</button><button class="icon-btn" id="nextWeek" aria-label="下一週">›</button></div></div>
   <div class="week" id="week"></div>
@@ -131,51 +131,6 @@
  render();
 })();
 </script>
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
-  import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
-
-  const firebaseApp = initializeApp({
-    apiKey: 'AIzaSyAuAjsVhn8VyMXWsNV5vZMQk7dyM0fzVuM',
-    authDomain: 'project-5191264609342590922.firebaseapp.com',
-    projectId: 'project-5191264609342590922',
-    storageBucket: 'project-5191264609342590922.firebasestorage.app',
-    messagingSenderId: '115197094121',
-    appId: '1:115197094121:web:94287081bfb0383baba878',
-    measurementId: 'G-2FSJ7DTBEV'
-  });
-  const auth = getAuth(firebaseApp);
-  const authButton = document.getElementById('authButton');
-  let currentUser = null;
-
-  onAuthStateChanged(auth, user => {
-    currentUser = user;
-    authButton.disabled = false;
-    authButton.textContent = user ? `登出 · ${user.displayName || user.email || 'Google 帳號'}` : '使用 Google 登入';
-    authButton.title = user ? (user.email || user.displayName || '已登入') : '使用 Google 帳號登入';
-  });
-
-  authButton.addEventListener('click', async () => {
-    if (location.protocol === 'file:') {
-      authButton.title = '請先透過 localhost 或 Firebase Hosting 開啟網頁';
-      authButton.textContent = '請改用 localhost 開啟';
-      return;
-    }
-    authButton.disabled = true;
-    try {
-      if (currentUser) await signOut(auth);
-      else await signInWithPopup(auth, new GoogleAuthProvider());
-    } catch (error) {
-      authButton.title = error.code === 'auth/operation-not-allowed'
-        ? 'Firebase 尚未啟用 Google 登入'
-        : error.code === 'auth/unauthorized-domain'
-          ? '目前網站網域尚未加入 Firebase 授權網域'
-          : `登入失敗：${error.message || error.code || '請稍後再試'}`;
-      authButton.textContent = '登入失敗，查看提示';
-    } finally {
-      authButton.disabled = false;
-    }
-  });
-</script>
+<script type="module" src="./auth.js"></script>
 </body>
 </html>
