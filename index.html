@@ -98,10 +98,36 @@
   if(/筆記|整理/.test(title))return ['選一小段教材或一頁筆記（2 分鐘）','整理這一小段的 3 個關鍵概念 10 分鐘','圈出還不懂的一點，列為下一步（3 分鐘）'];
   return ['打開教材，找到「'+title+'」要處理的範圍（2 分鐘）','先完成其中一小段 10 分鐘','合上教材，寫下 3 個記得的重點（5 分鐘）'];
  }
- function savePlanner(){try{localStorage.setItem('dailyPlannerEventsV2',JSON.stringify(events));localStorage.setItem('dailyPlannerTasksV2',JSON.stringify(tasks))}catch(e){}}
- try{const savedEvents=JSON.parse(localStorage.getItem('dailyPlannerEventsV2')||'null'),savedTasks=JSON.parse(localStorage.getItem('dailyPlannerTasksV2')||'null');if(Array.isArray(savedEvents))events.splice(0,events.length,...savedEvents);if(Array.isArray(savedTasks))tasks.splice(0,tasks.length,...savedTasks)}catch(e){}
+ const defaultEvents=events.map(item=>({...item}));
+ const defaultTasks=tasks.map(item=>({...item,split:true,steps:makeSteps(item.title).map(text=>({text,done:false}))}));
+ const guestMigrationKey='dailyPlannerGuestMigratedV1';
+ let activePlannerUid=null;
+ function validPlannerDate(value){if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const [y,m,d]=value.split('-').map(Number);return fmtDate(new Date(y,m-1,d))===value}
+ function normalizePlannerSnapshot(data){
+  const sourceEvents=Array.isArray(data?.events)?data.events:defaultEvents,sourceTasks=Array.isArray(data?.tasks)?data.tasks:defaultTasks;
+  const cleanEvents=sourceEvents.slice(0,1000).filter(e=>e&&typeof e==='object'&&validPlannerDate(e.date)&&/^\d{2}:\d{2}$/.test(String(e.start||''))&&/^\d{2}:\d{2}$/.test(String(e.end||''))).map(e=>({title:String(e.title||'未命名行程').slice(0,40),date:e.date,start:e.start,end:e.end,repeat:['單次','每週','每月'].includes(e.repeat)?e.repeat:'單次',color:palette.some(p=>p.hex===e.color)?e.color:palette[0].hex,place:String(e.place||'').slice(0,60)}));
+  const cleanTasks=sourceTasks.slice(0,1000).filter(t=>t&&typeof t==='object'&&validPlannerDate(t.due)).map(t=>{const title=String(t.title||'未命名待辦').slice(0,60),split=t.split===undefined?true:!!t.split,oldIndex=Math.max(0,Number(t.stepIndex)||0);let steps=Array.isArray(t.steps)?t.steps.slice(0,20).map((step,i)=>typeof step==='string'?({text:step.slice(0,160),done:i<oldIndex}):({text:String(step?.text||'').slice(0,160),done:!!step?.done})):[];if(split&&!steps.length)steps=makeSteps(title).map(text=>({text,done:false}));if(!split)steps=[];return {title,due:t.due,time:/^\d{2}:\d{2}$/.test(String(t.time||''))?t.time:null,allDay:t.allDay===undefined?true:!!t.allDay,done:!!t.done,split,steps}});
+  return {events:cleanEvents,tasks:cleanTasks};
+ }
+ function clonePlannerData(data){return JSON.parse(JSON.stringify(data))}
+ function plannerStorageKeys(uid){const scope=uid||'guest';return {events:'dailyPlannerEventsV2:'+scope,tasks:'dailyPlannerTasksV2:'+scope}}
+ function guestMigrationDone(){try{return localStorage.getItem(guestMigrationKey)==='1'}catch(e){return false}}
+ function readPlannerStorage(uid){
+  try{
+   if(!uid&&guestMigrationDone())return null;
+   const keys=plannerStorageKeys(uid);let savedEvents=JSON.parse(localStorage.getItem(keys.events)||'null'),savedTasks=JSON.parse(localStorage.getItem(keys.tasks)||'null');
+   if(!uid){if(!Array.isArray(savedEvents))savedEvents=JSON.parse(localStorage.getItem('dailyPlannerEventsV2')||'null');if(!Array.isArray(savedTasks))savedTasks=JSON.parse(localStorage.getItem('dailyPlannerTasksV2')||'null')}
+   if(!Array.isArray(savedEvents)&&!Array.isArray(savedTasks))return null;
+   return {events:Array.isArray(savedEvents)?savedEvents:defaultEvents,tasks:Array.isArray(savedTasks)?savedTasks:defaultTasks};
+  }catch(e){return null}
+ }
+ function persistPlannerLocal(){try{const keys=plannerStorageKeys(activePlannerUid);localStorage.setItem(keys.events,JSON.stringify(events));localStorage.setItem(keys.tasks,JSON.stringify(tasks))}catch(e){}}
+ function replacePlannerData(data,persist=true){const clean=normalizePlannerSnapshot(data);events.splice(0,events.length,...clean.events);tasks.splice(0,tasks.length,...clean.tasks);if(persist)persistPlannerLocal()}
+ function restorePlannerUser(uid){activePlannerUid=typeof uid==='string'&&uid?uid:null;let data=readPlannerStorage(activePlannerUid);if(!data&&activePlannerUid&&!guestMigrationDone())data=readPlannerStorage(null);replacePlannerData(data||clonePlannerData({events:defaultEvents,tasks:defaultTasks}));render()}
+ function savePlanner(){persistPlannerLocal();window.dispatchEvent(new CustomEvent('daily-planner:changed'))}
+ const initialPlannerData=readPlannerStorage(null)||clonePlannerData({events:defaultEvents,tasks:defaultTasks});replacePlannerData(initialPlannerData);persistPlannerLocal();
  tasks.forEach(t=>{if(t.split===undefined)t.split=true;if(!Array.isArray(t.steps))t.steps=[];const oldIndex=t.stepIndex||0;t.steps=t.steps.map((step,i)=>typeof step==='string'?({text:step,done:i<oldIndex}):({text:String(step.text||''),done:!!step.done}));if(t.split&&!t.steps.length)t.steps=makeSteps(t.title).map(text=>({text,done:false}));if(!t.split)t.steps=[];delete t.stepIndex});
- function renderStudyTasks(){
+ window.dailyPlanner={getSnapshot(){return clonePlannerData({events,tasks})},switchUser(uid){restorePlannerUser(uid)},applySnapshot(data){replacePlannerData(data);render()},markGuestMigrated(){try{localStorage.setItem(guestMigrationKey,'1')}catch(e){}}}; function renderStudyTasks(){
   const selectedKey=fmtDate(selected),list=tasks.map((t,i)=>({...t,_i:i})).filter(t=>t.due===selectedKey||(!t.done&&t.due<selectedKey)).sort((a,b)=>Number(a.done)-Number(b.done)||a.due.localeCompare(b.due));
   document.getElementById('taskCount').textContent=tasks.filter(t=>!t.done).length+' 件';const wrap=document.getElementById('tasks');wrap.innerHTML='';
   if(!list.length){wrap.innerHTML='<div class="tasks-empty">這天還沒有待辦。可以先安排一個 10 分鐘的小步驟 🌱</div>';return}

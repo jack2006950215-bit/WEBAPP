@@ -1,0 +1,82 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Document: users/{userId}/planner/state
+// Fields:
+//   - uid: string (required, immutable; must equal the authenticated UID)
+//   - payload: string (required; JSON-serialized events/tasks, max 300,000 bytes)
+//   - updatedAt: timestamp (required; must be the server request time)
+//
+// The payload contains the planner's event and task arrays. The client validates
+// their structure before applying them. Rules restrict the document shape and
+// size, and each document is isolated to its authenticated owner.
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && resource.data.uid == request.auth.uid;
+    }
+
+    function uidUnchanged() {
+      return request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return request.resource.data.uid == resource.data.uid;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidPlannerData() {
+      return hasRequiredFields(['uid', 'payload', 'updatedAt'])
+        && hasOnlyAllowedFields(['uid', 'payload', 'updatedAt'])
+        && request.resource.data.uid is string
+        && request.resource.data.uid.size() > 0
+        && request.resource.data.uid.size() <= 128
+        && request.resource.data.payload is string
+        && request.resource.data.payload.size() <= 300000
+        && request.resource.data.updatedAt is timestamp
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /users/{userId}/planner/{documentId} {
+      allow read: if isOwner(userId)
+        && documentId == 'state';
+
+      allow create: if isOwner(userId)
+        && documentId == 'state'
+        && uidUnchanged()
+        && isValidPlannerData();
+
+      allow update: if isOwner(userId)
+        && documentId == 'state'
+        && isDocOwner()
+        && uidNotModified()
+        && isValidPlannerData();
+
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
