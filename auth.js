@@ -54,7 +54,7 @@ if (location.protocol === "file:") {
       authButton.title = "Firebase 尚未連接設定";
       setStatus("Firebase 設定尚未連接，Google 登入與雲端同步暫未啟用。");
     } else {
-      const sdk = "https://www.gstatic.com/firebasejs/11.10.0";
+      const sdk = "https://www.gstatic.com/firebasejs/13.4.0";
       const [appSdk, authSdk, firestoreSdk] = await Promise.all([
         import(sdk + "/firebase-app.js"),
         import(sdk + "/firebase-auth.js"),
