@@ -20,10 +20,16 @@ async function sendQuestionToGemini(context){
  if(!chat)chat=model.startChat();
  try{return await chat.sendMessage(context)}catch(error){
   const detail=[error?.message,error?.code,error?.status].filter(Boolean).join(' ');
-  if(chatModelName!=='gemini-3.8-flash'||!/internal|500|overload|high demand|unavailable/i.test(detail))throw error;
-  status.textContent='Gemini Flash 忙碌，正在改用備援模型…';
+  if(chatModelName!=='gemini-3.8-flash'||!/internal|500|overload|high demand|unavailable|429|quota|resource-exhausted|rate.?limit/i.test(detail))throw error;
+  status.textContent='主要模型暫不可用，正在嘗試備援…';
   chatModelName='gemini-4-hydrogen';modelPromise=makeChat(chatModelName);model=await modelPromise;chat=model.startChat();
-  return await chat.sendMessage(context);
+  try{return await chat.sendMessage(context)}catch(fallbackError){
+   const fallbackDetail=[fallbackError?.message,fallbackError?.code,fallbackError?.status].filter(Boolean).join(' ');
+   if(!/429|quota|resource-exhausted|rate.?limit|per day/i.test(fallbackDetail))throw fallbackError;
+   status.textContent='正在嘗試免費的 Flash-Lite 備援…';
+   chatModelName='gemini-3.5-flash-lite';modelPromise=makeChat(chatModelName);model=await modelPromise;chat=model.startChat();
+   return await chat.sendMessage(context);
+  }
  }
 }
 form.onsubmit=async e=>{
@@ -34,10 +40,11 @@ form.onsubmit=async e=>{
   const agenda=allEvents.slice(0,eventLimit).map(x=>({date:x.date,title:x.title,start:x.start,end:x.end,place:x.place||'',repeat:x.repeat}));
   const tasksForAi=allTasks.slice(0,taskLimit).map(x=>({title:x.title,due:x.due,time:x.time||'',done:!!x.done}));
   const context='目前選取日期：'+day+'（使用者當地日期）\n完整行程（最多100筆，依日期與開始時間排序）：'+JSON.stringify(agenda)+(allEvents.length>eventLimit?'\n行程資料已截取，尚有 '+(allEvents.length-eventLimit)+' 筆未附上。':'')+'\n全部待辦（最多100筆，包含已完成狀態）：'+JSON.stringify(tasksForAi)+(allTasks.length>taskLimit?'\n待辦資料已截取，尚有 '+(allTasks.length-taskLimit)+' 筆未附上。':'')+'\n使用者問題：'+question;
-  const result=await sendQuestionToGemini(context);addMessage(result.response.text()||'我暫時沒有可用的回答。','bot');status.textContent=chatModelName==='gemini-4-hydrogen'?'已改用備援模型回答。':'';
+  const result=await sendQuestionToGemini(context);addMessage(result.response.text()||'我暫時沒有可用的回答。','bot');status.textContent=chatModelName==='gemini-3.5-flash-lite'?'已改用免費 Flash-Lite 備援模型回答。':chatModelName==='gemini-4-hydrogen'?'已改用備援模型回答。':'';
  }catch(error){
   console.error('Firebase AI Logic request failed',error);modelPromise=null;chat=null;chatModelName='gemini-3.8-flash';const detail=[error?.message,error?.code,error?.status].filter(Boolean).join(' ');
   if(/app.?check/i.test(detail))status.textContent='AI 安全驗證尚未完成，請稍後重試。';
+  else if(/429|quota|resource-exhausted|rate.?limit|per day/i.test(detail))status.textContent='Gemini 免費用量已達今日上限，請等用量重置後再試；未啟用付費。';
   else if(/internal|500|overload|high demand|unavailable/i.test(detail))status.textContent='Gemini 目前忙碌，請稍後再試。';
   else status.textContent='AI 連線失敗，請確認 Firebase AI Logic 設定後再試。';
  }finally{send.disabled=false;input.focus()}
