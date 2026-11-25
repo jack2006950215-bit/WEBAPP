@@ -53,7 +53,7 @@
   <div class="timeline" id="timeline"></div>
   <div class="section-head"><h2 id="tasksHeading">今天待辦 <span class="sub">不急，逐一完成</span></h2><button class="text-btn" id="addTaskTop">＋ 新增</button></div>
   <div class="tasks" id="tasks"></div>
-  <section class="completed-section" id="completedTasksSection" hidden aria-labelledby="completedTasksHeading"><div class="section-head"><h2 id="completedTasksHeading" tabindex="-1">已完成任務區</h2><span id="completedTaskCount" class="sub"></span></div><div class="tasks" id="completedTasks"></div></section>
+  <section class="completed-section" id="completedTasksSection" aria-labelledby="completedTasksHeading"><div class="section-head"><h2 id="completedTasksHeading" tabindex="-1">已完成任務區</h2><span id="completedTaskCount" class="sub"></span></div><div class="tasks" id="completedTasks"></div></section>
   <button class="fab" id="fab" aria-label="新增項目">＋</button>
 </div>
 <nav class="nav"><button class="nav-item active" data-page="首頁"><span>⌂</span>首頁</button><button class="nav-item" data-page="行程"><span>▦</span>行程</button><button class="nav-item" data-page="待辦"><span>☑</span>待辦</button><button class="nav-item" data-page="我的"><span>☺</span>我的</button></nav>
@@ -134,7 +134,7 @@
   const selectedKey=fmtDate(selected),list=tasks.map((t,i)=>({...t,_i:i})).filter(t=>!t.done&&(t.due===selectedKey||t.due<selectedKey)).sort((a,b)=>a.due.localeCompare(b.due));
   const completed=tasks.map((t,i)=>({...t,_i:i})).filter(t=>t.done).sort((a,b)=>b.due.localeCompare(a.due));
   document.getElementById('taskCount').textContent=tasks.filter(t=>!t.done).length+' 件';const wrap=document.getElementById('tasks');wrap.innerHTML='';
-  const completedSection=document.getElementById('completedTasksSection'),completedWrap=document.getElementById('completedTasks');completedSection.hidden=completed.length===0;document.getElementById('completedTaskCount').textContent=completed.length?`${completed.length} 件`:'';completedWrap.innerHTML='';
+  const completedWrap=document.getElementById('completedTasks');document.getElementById('completedTaskCount').textContent=completed.length?`${completed.length} 件`:'';completedWrap.innerHTML='';if(!completed.length)completedWrap.innerHTML='<div class="tasks-empty">目前還沒有已完成的任務，完成後會顯示在這裡。</div>';
   if(!list.length)wrap.innerHTML='<div class="tasks-empty">這天還沒有待辦。可以先安排一個 10 分鐘的小步驟 🌱</div>';
   const renderTaskRow=(t,target)=>{const i=t._i,hasSteps=!!t.split&&Array.isArray(t.steps)&&t.steps.length>0,delta=Math.round((parseDate(t.due)-parseDate(selectedKey))/86400000),dueLabel=delta<0?'逾期 '+Math.abs(delta)+' 天':delta===0?'今天到期':delta===1?'明天到期':(parseDate(t.due).getMonth()+1)+'/'+parseDate(t.due).getDate()+' 到期',due=t.allDay?'・全天':t.time?'・'+escapeHtml(t.time):'',nextIndex=hasSteps?t.steps.findIndex(x=>!x.done):-1,row=document.createElement('div');row.className='task'+(t.done?' done':'');
    const subtaskHtml=hasSteps&&!t.done?'<div class="microstep-list">'+t.steps.map((step,j)=>'<label class="microstep"><input type="checkbox" data-step="'+j+'" '+(step.done?'checked':'')+' aria-label="'+(step.done?'取消完成':'標記完成')+'：'+escapeHtml(step.text)+'"><span>'+escapeHtml(step.text)+'</span></label>').join('')+'</div>':'';
