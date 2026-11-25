@@ -6,6 +6,8 @@ export const firebaseConfig = {
   projectId: "project-5191264609342590922",
   storageBucket: "project-5191264609342590922.firebasestorage.app",
   messagingSenderId: "115197094121",
-  appId: "1:115197094121:web:28f12a614404e57eaba878",
-  measurementId: "G-E6ZV9Q2JSD",
+  appId: "1:115197094121:web:c83624b59c3ef02baba878",
+  measurementId: "G-0FX3YMVLQM",
 };
+
+export const firebaseAppCheckSiteKey = "6Lf32zEuAAAAANR0ajkoXwREyeBng9v-dP1oUQMD";
